@@ -311,13 +311,13 @@ function drawEnlargedCard(thisCard) {
   // Card in the centre
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
 
-  fill(255);
-  textAlign(LEFT, TOP);
-  textSize(isMobile ? 14 : 16);
+  //fill(255);
+  //textAlign(LEFT, TOP);
+  //textSize(isMobile ? 14 : 16);
 
-  let textX = (width / 2) + (enlargedW / 2) + 20;
-  let textY = (height / 2) - (enlargedH / 2);
-  text(thisCard.description, textX, textY, 200, height);
+  //let textX = (width / 2) + (enlargedW / 2) + 20;
+  //let textY = (height / 2) - (enlargedH / 2);
+  //text(("Tarot interpretation:\n\n" + thisCard.description), textX, textY, 200, height);
 }
 
 function calculateCardSize(rows, cols) {
