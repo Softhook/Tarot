@@ -2,7 +2,9 @@ let state = "intro"; // Start directly at "intro"
 let simulateMode = false;
 let OUimg;
 let OUfont;
-let isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+let isIOS = isIOSDevice();
+let isMobile = /(Mobi|Android|iPhone|iPad|iPod)/i.test(navigator.userAgent);
 
 let layouts = [
   {name: "Single Card", positionsCount: 1},
@@ -35,7 +37,7 @@ let startTouchY = 0;
 let cardData = [];
 let cardAspectRatio = 100 / 171;
 let cardWidth, cardHeight, margin;
-let isMobile = /(Mobi|Android|iPhone|iPad|iPod)/i.test(navigator.userAgent);
+
 
 let majorArcanaNames = [
   "The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant",
@@ -50,6 +52,14 @@ let imagesLoaded = 0;
 let totalImages = 0;
 
 let descriptions = [];
+
+
+function isIOSDevice() {
+  return (
+    /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
 
 function preload() {
   OUimg = loadImage('ou.png', () => {}, () => {});
