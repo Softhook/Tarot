@@ -4,7 +4,7 @@ let OUimg;
 let OUfont;
 
 let isIOS = isIOSDevice();
-let isMobile = isMobile();
+let isMobile = isMobileDevice();
 
 let layouts = [
   {name: "Single Card", positionsCount: 1},
@@ -61,7 +61,7 @@ function isIOSDevice() {
   );
 }
 
-function isMobile() {
+function isMobileDevice() {
   return (
     /(Mobi|Android|iPhone|iPad|iPod)/i.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
