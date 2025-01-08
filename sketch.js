@@ -216,7 +216,7 @@ function drawAboutScreen() {
   textSize(isMobile ? 16 : 18);
   textLeading(25);
 
-  let a = "The Open University Tarot deck was created by Christian Nold, Georgy Holden, and James Warren as part of an OU scholarship project. The card designs are based on the wishes, hopes, and dreams submitted by Design students from the U101 module over the last decade. The students wrote their wishes on postcards and posted them to us. We transcribed and analysed them by hand, then transformed them into graphics using AI and human labour. The design was created with Adobe Firefly, Photoshop, p5.js, Chat GPT o1, and the typefaces Roman Holiday Sketch, Poppins and the OU logo.";
+  let a = "This Tarot deck was created by Christian Nold, Georgy Holden, James Warren as part of an OU scholarship project. The card designs are based on the wishes, hopes and dreams submitted by Design students from the U101 module over the last decade. The students wrote their wishes onto postcards that they posted to us and we transcribed and analysed by hand and then transformed into graphics using generative Artificial Intelligence (AI) and lots of human labour. The design was created with Adobe Firefly, Photoshop, p5.js, Chat GPT o1 and the typefaces Roman Holiday Sketch and Poppins.";
 
   text(a, width / 2, isMobile ? 50 : 100, 400);
   
