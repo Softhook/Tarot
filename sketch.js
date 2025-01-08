@@ -1,4 +1,8 @@
-let state = "intro"; // Start directly at "intro"
+/* --------------------------
+   GLOBAL VARIABLES
+-------------------------- */
+
+let state = "intro"; 
 let simulateMode = false;
 let OUimg;
 let OUfont;
@@ -38,7 +42,6 @@ let cardData = [];
 let cardAspectRatio = 100 / 171;
 let cardWidth, cardHeight, margin;
 
-
 let majorArcanaNames = [
   "The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant",
   "The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man",
@@ -50,10 +53,15 @@ let ranks = ["Ace","2","3","4","5","6","7","8","9","10","Page","Knight","Queen",
 let cardImages = [];
 let imagesLoaded = 0;
 let totalImages = 0;
-
 let descriptions = [];
 
+let filePaths = [];       // Will hold all image paths for cards
+let currentIndex = 0;     // Tracks how many we have loaded so far
+let chunkSize = 5;        // How many images to load per batch
 
+/* --------------------------
+   HELPER FUNCTIONS
+-------------------------- */
 function isIOSDevice() {
   return (
     /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -99,21 +107,15 @@ function setup() {
     }
   }
 
-  totalImages = cardData.length;
+  // Build filePaths array (one entry per card)
   for (let i = 0; i < cardData.length; i++) {
     let fileName = getFileNameForCard(cardData[i].name);
-    loadImage(
-      "data/" + fileName,
-      (img) => {
-        cardImages[i] = img;
-        imagesLoaded++;
-      },
-      () => {
-        cardImages[i] = null;
-        imagesLoaded++;
-      }
-    );
+    filePaths.push("data/" + fileName);
   }
+
+  // We will load them in chunks:
+  totalImages = filePaths.length;
+  loadNextBatch();  // <--- start chunk loading
 }
 
 function draw() {
@@ -130,7 +132,7 @@ function draw() {
     rect(barX, barY, barW * progress, barH);
   }
 
-  // State logic
+  // State logic (unchanged)
   if (state === "intro") {
     drawIntroScreen();
   } else if (state === "about") {
@@ -145,24 +147,58 @@ function draw() {
   }
 }
 
+/* --------------------------
+   CHUNK LOADING FUNCTIONS
+-------------------------- */
+function loadNextBatch() {
+  // Load up to 'chunkSize' images from filePaths
+  let endIndex = min(currentIndex + chunkSize, totalImages);
+  for (let i = currentIndex; i < endIndex; i++) {
+    loadImage(
+      filePaths[i],
+      (img) => {
+        // On success
+        cardImages[i] = img;
+        imagesLoaded++;
+        checkLoadStatus();
+      },
+      (err) => {
+        // On error
+        console.log("Load error on:", filePaths[i], err);
+        cardImages[i] = null;
+        imagesLoaded++;
+        checkLoadStatus();
+      }
+    );
+  }
+  currentIndex = endIndex;
+}
+
+function checkLoadStatus() {
+  // If not all loaded, and we still have more to request, queue next batch
+  if (imagesLoaded < totalImages && currentIndex < totalImages) {
+    setTimeout(loadNextBatch, 200); 
+  }
+}
+
+/* --------------------------
+   SCREEN DRAW FUNCTIONS
+-------------------------- */
 function drawIntroScreen() {
   imageMode(CENTER);
   image(OUimg, width / 2, 80);
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 18);
 
-  // Layout selection
   for (let i = 0; i < layouts.length; i++) {
     let yPos = (isMobile ? 180 : 200) + i * (isMobile ? 50 : 60);
     rectMode(CENTER);
-    //fill(180);
-    fill(200,150,0);
+    fill(200, 150, 0);
     rect(width / 2, yPos, isMobile ? 180 : 200, isMobile ? 35 : 40);
     fill(0);
     text(layouts[i].name, width / 2, yPos);
   }
 
-  // "About" button
   let aboutButtonY = isMobile ? 650 : 720;
   let aboutButtonW = 100;
   let aboutButtonH = 40;
@@ -184,7 +220,6 @@ function drawAboutScreen() {
 
   text(a, width / 2, isMobile ? 50 : 100, 400);
   
-  // Back button to intro
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 14);
   let backButtonW = 100;
@@ -201,7 +236,6 @@ function drawAboutScreen() {
 
 function drawLayout() {
   if (!chosenLayout) return;
-
   let count = chosenLayout.positionsCount;
   let layoutName = chosenLayout.name;
 
@@ -218,7 +252,8 @@ function drawLayout() {
       cards[i].y = yPos;
       drawCard(cards[i], xPos, yPos, cardWidth, cardHeight, i);
     }
-  } else if (layoutName === "Year") {
+  }
+  else if (layoutName === "Year") {
     let radius = isMobile ? width / 3 : width / 5;
     let centreX = width / 2;
     let centreY = height / 2;
@@ -237,7 +272,8 @@ function drawLayout() {
       cards[i].y = yPos;
       drawCard(cards[i], xPos, yPos, cardWidth, cardHeight, i);
     }
-  } else if (layoutName === "5-Card Cross") {
+  }
+  else if (layoutName === "5-Card Cross") {
     cardHeight = isMobile ? 170 : 260;
     cardWidth = cardHeight * cardAspectRatio;
     let centreX = width / 2;
@@ -263,7 +299,8 @@ function drawLayout() {
     cards[4].y = centreY;
     drawCard(cards[4], cards[4].x, cards[4].y, cardWidth, cardHeight, 4);
 
-  } else if (layoutName === "Celtic Cross") {
+  }
+  else if (layoutName === "Celtic Cross") {
     cardHeight = isMobile ? 140 : 220;
     cardWidth = cardHeight * cardAspectRatio;
     let middleOffset = 50;
@@ -305,7 +342,8 @@ function drawLayout() {
     for (let i = 6; i < 10; i++) {
       drawCard(cards[i], cards[i].x, cards[i].y, cardWidth, cardHeight, i);
     }
-  } else {
+  }
+  else {
     let rows = (count > 3) ? 2 : 1;
     let cols = ceil(count / rows);
     calculateCardSize(rows, cols);
@@ -324,17 +362,7 @@ function drawLayout() {
 function drawEnlargedCard(thisCard) {
   let enlargedH = height * 0.9;
   let enlargedW = enlargedH * cardAspectRatio;
-  
-  // Card in the centre
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
-
-  //fill(255);
-  //textAlign(LEFT, TOP);
-  //textSize(isMobile ? 14 : 16);
-
-  //let textX = (width / 2) + (enlargedW / 2) + 20;
-  //let textY = (height / 2) - (enlargedH / 2);
-  //text(("Tarot interpretation:\n\n" + thisCard.description), textX, textY, 200, height);
 }
 
 function calculateCardSize(rows, cols) {
@@ -353,6 +381,9 @@ function calculateCardSize(rows, cols) {
   }
 }
 
+/* --------------------------
+   TOUCH / MOUSE CONTROLS
+-------------------------- */
 document.ontouchmove = function(event) {
   event.preventDefault();
 };
@@ -382,7 +413,6 @@ function touchEnded() {
 }
 
 function mousePressed() {
-  // Attempt to go fullscreen on first press if not on iOS
   if (!isIOS && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
     if (!fullscreen()) {
       fullscreen(true);
@@ -467,7 +497,7 @@ function mousePressed() {
         let w = cardWidth;
         let h = cardHeight;
 
-        // Adjust bounding box if Celtic Cross index is 1
+        // Special bounding box if Celtic Cross index is 1 (rotated card)
         if (chosenLayout && chosenLayout.name === "Celtic Cross" && i === 1) {
           w = cardHeight;
           h = cardWidth;
@@ -489,6 +519,9 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+/* --------------------------
+   LAYOUT SETUP
+-------------------------- */
 function setupLayout() {
   cards = [];
   
@@ -503,6 +536,7 @@ function setupLayout() {
       });
     }
   } else {
+    // Only pick images that were successfully loaded
     let validIndices = cardData
       .map((_, index) => index)
       .filter(index => cardImages[index] !== null);
@@ -554,12 +588,9 @@ function getFileNameForCard(cardName) {
 
 function drawCard(c, x, y, w, h, cardIndex) {
   imageMode(CENTER);
-  // If the image is loaded, display it
   if (cardImages[c.index]) {
     image(cardImages[c.index], x, y, w, h);
-  } 
-  // Otherwise, draw a placeholder box
-  else {
+  } else {
     fill(200);
     rectMode(CENTER);
     rect(x, y, w, h);
@@ -568,7 +599,6 @@ function drawCard(c, x, y, w, h, cardIndex) {
     text(c.name, x, y);
   }
 
-  // Optional labels for some layouts
   if (chosenLayout && layoutLabels[chosenLayout.name]) {
     let labels = layoutLabels[chosenLayout.name];
     if (typeof cardIndex !== 'undefined' && cardIndex < labels.length) {
