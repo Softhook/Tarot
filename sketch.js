@@ -77,7 +77,7 @@ function isMobileDevice() {
 }
 
 function preload() {
-  OUimg = loadImage('ou.png', () => {}, () => {});
+  OUimg = loadImage('logo.png', () => {}, () => {});
   OUfont = loadFont('poppins.ttf', () => {}, () => {});
   descriptions = loadStrings("descriptions.txt");
 }
