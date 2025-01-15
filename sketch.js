@@ -35,8 +35,6 @@ let chosenLayout = null;
 let cards = [];
 let enlargedCardIndex = -1;
 
-let startTouchX = 0;
-let startTouchY = 0;
 
 let cardData = [];
 let cardAspectRatio = 100 / 171;
@@ -389,26 +387,7 @@ document.ontouchmove = function(event) {
 };
 
 function touchStarted() {
-  startTouchX = mouseX;
-  startTouchY = mouseY;
   mousePressed();
-  return false;
-}
-
-function touchEnded() {
-  let endTouchX = mouseX;
-  let endTouchY = mouseY;
-  let dx = endTouchX - startTouchX;
-  let dy = endTouchY - startTouchY;
-  let swipeThreshold = 50;
-
-  if (enlargedCardIndex >= 0 && chosenLayout && chosenLayout.positionsCount > 1 && abs(dx) > swipeThreshold && abs(dy) < swipeThreshold) {
-    if (dx < 0 && enlargedCardIndex < cards.length - 1) {
-      enlargedCardIndex++;
-    } else if (dx > 0 && enlargedCardIndex > 0) {
-      enlargedCardIndex--;
-    }
-  }
   return false;
 }
 
