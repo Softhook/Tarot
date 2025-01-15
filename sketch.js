@@ -122,10 +122,10 @@ function draw() {
   // Loading progress bar
   if (imagesLoaded < totalImages) {
     let progress = imagesLoaded / totalImages;
-    let barW = width * 0.8;
-    let barH = 20;
-    let barX = width * 0.1;
-    let barY = 10;
+    let barW = width; // Bar width is now the full canvas width
+    let barH = 10;
+    let barX = 0;    // Bar starts at x = 0
+    let barY = 0;    // Bar starts at y = 0
     fill(255);
     rect(barX, barY, barW * progress, barH);
   }
