@@ -382,9 +382,11 @@ function calculateCardSize(rows, cols) {
 /* --------------------------
    TOUCH / MOUSE CONTROLS
 -------------------------- */
-document.ontouchmove = function(event) {
-  event.preventDefault();
-};
+
+//Removed the touch override
+//document.ontouchmove = function(event) {
+//  event.preventDefault();
+//};
 
 function touchStarted() {
   mousePressed();
