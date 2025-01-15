@@ -124,7 +124,7 @@ function draw() {
     let progress = imagesLoaded / totalImages;
     let barW = width * progress;
     let barH = 20;
-    let barX = width / 2 - barW / 2;
+    let barX = (width - barW) / 2; // Correct centering!
     let barY = 0;
     fill(255);
     rect(barX, barY, barW, barH);
