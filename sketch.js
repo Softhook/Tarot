@@ -122,12 +122,12 @@ function draw() {
   // Loading progress bar
   if (imagesLoaded < totalImages) {
     let progress = imagesLoaded / totalImages;
-    let barW = width * progress;
-    let barH = 20;
-    let barX = (width - barW) / 2; // Correct centering!
+    let barWidth = width * progress;
+    let barHeight = 20;
+    let barX = (width - barWidth) / 2;
     let barY = 0;
     fill(255);
-    rect(barX, barY, barW, barH);
+    rect(barX, barY, barWidth, barHeight);
   }
 
   // State logic (unchanged)
