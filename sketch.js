@@ -55,7 +55,7 @@ let descriptions = [];
 
 let filePaths = [];       // Will hold all image paths for cards
 let currentIndex = 0;     // Tracks how many we have loaded so far
-let chunkSize = 5;        // How many images to load per batch
+let chunkSize = 2;        // How many images to load per batch
 
 /* --------------------------
    HELPER FUNCTIONS
