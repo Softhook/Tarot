@@ -3,7 +3,7 @@
 -------------------------- */
 let state = "intro"; 
 let simulateMode = false;
-let OUimg;
+let logo;
 let OUfont;
 
 let isIOS = isIOSDevice();
@@ -24,8 +24,7 @@ let layoutLabels = {
   "Past, Present, Future": ["Past", "Present", "Future"],
   "Celtic Cross": ["Present", "Challenge", "Immediate Future", "Past", "Foundation", "Future", "Outcome", "Hopes & Fears", "External", "Self", "Outcome"],
   "STAR": ["Situation", "Action", "Task", "Result"],
-  "Year": ["Summary", "January", "February", "March", "April", "May", "June",
-                  "July", "August", "September", "October", "November", "December"],
+  "Year": ["Summary", "January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"],
   "SMART": ["Specific", "Measurable", "Achievable", "Relevant", "Time-bound"],
   "5-Card Cross": ["Present", "Internal", "External", "Past", "Future"]
 };
@@ -46,7 +45,6 @@ let majorArcanaNames = [
 let suits = ["Mind","Heart","Body","World"];
 let ranks = ["Ace","2","3","4","5","6","7","8","9","10","Page","Knight","Queen","King"];
 
-let cardImages = []; // no longer used for preloading all images
 let descriptions = [];
 let backImage;
 let flipSpeed = 0.05;
@@ -72,7 +70,7 @@ function isMobileDevice() {
 }
 
 function preload() {
-  OUimg = loadImage('logo.png', () => {}, () => {});
+  logo = loadImage('logo.png', () => {}, () => {});
   OUfont = loadFont('poppins.ttf', () => {}, () => {});
   descriptions = loadStrings("descriptions.txt");
   backImage = loadImage("back2.jpg");
@@ -155,12 +153,12 @@ function draw() {
 -------------------------- */
 function drawIntroScreen() {
   imageMode(CENTER);
-  image(OUimg, width / 2, 80);
+  image(logo, width / 2, 100);
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 18);
 
   for (let i = 0; i < layouts.length; i++) {
-    let yPos = (isMobile ? 180 : 200) + i * (isMobile ? 50 : 60);
+    let yPos = (isMobile ? 200 : 220) + i * (isMobile ? 50 : 60);
     rectMode(CENTER);
     fill(200, 150, 0);
     rect(width / 2, yPos, isMobile ? 180 : 200, isMobile ? 35 : 40);
