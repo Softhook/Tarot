@@ -720,20 +720,30 @@ function drawCard(c, x, y, w, h, cardIndex) {
       rect(0, 0, w, h);
     }
   }
+  
+  pop();  // End of transformation
 
-  // Layout label text if relevant
-  if (chosenLayout && layoutLabels[chosenLayout.name]) {
-    let labels = layoutLabels[chosenLayout.name];
-    if (typeof cardIndex !== 'undefined' && cardIndex < labels.length) {
-      textAlign(LEFT, BOTTOM);
-      fill(255);
-      textSize(isMobile ? 10 : 14);
-      // Shift text slightly to remain visible
-      text(labels[cardIndex], -w / 2 + 1, -h / 2);
+// Draw label outside the flip transformation so it doesn't flip
+if (chosenLayout && layoutLabels[chosenLayout.name]) {
+  let labels = layoutLabels[chosenLayout.name];
+  if (typeof cardIndex !== 'undefined' && cardIndex < labels.length) {
+    textAlign(LEFT, BOTTOM);
+    fill(255);
+    textSize(isMobile ? 10 : 14);
+
+    // Default label position
+    let labelX = x - w / 2 + 1;
+    let labelY = y - h / 2;
+
+    // Check for Celtic Cross layout and "Challenge" card (index 1)
+    if (chosenLayout.name === "Celtic Cross" && cardIndex === 1) {
+      labelX -= 87;  // Move the label 100 pixels higher
+      labelY += 42;  // Move the label 100 pixels higher
     }
-  }
 
-  pop();
+    text(labels[cardIndex], labelX, labelY);
+  }
+}
 }
 
 function keyPressed() {
