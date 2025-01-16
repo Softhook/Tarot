@@ -158,7 +158,7 @@ function drawIntroScreen() {
   textSize(isMobile ? 16 : 18);
 
   for (let i = 0; i < layouts.length; i++) {
-    let yPos = (isMobile ? 200 : 220) + i * (isMobile ? 50 : 60);
+    let yPos = (isMobile ? 180 : 220) + i * (isMobile ? 50 : 60);
     rectMode(CENTER);
     fill(200, 150, 0);
     rect(width / 2, yPos, isMobile ? 180 : 200, isMobile ? 35 : 40);
@@ -379,7 +379,7 @@ function mousePressed() {
 
   if (state === "intro") {
     for (let i = 0; i < layouts.length; i++) {
-      let yPos = (isMobile ? 180 : 200) + i * (isMobile ? 50 : 60);
+      let yPos = (isMobile ? 180 : 220) + i * (isMobile ? 50 : 60);
       let halfW = isMobile ? 90 : 100;
       let halfH = isMobile ? 17.5 : 20;
 
