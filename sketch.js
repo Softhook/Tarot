@@ -530,10 +530,7 @@ function setupLayout() {
       cards[i].filePath = filePaths[i];
     }
   } else {
-    let validIndices = cardData
-      .map((_, index) => index)
-      .filter(index => true); // Accept all since we load on demand
-    
+    let validIndices = cardData.map((_, index) => index);
     validIndices = shuffleArray(validIndices);
 
     for (let i = 0; i < chosenLayout.positionsCount; i++) {
@@ -547,9 +544,28 @@ function setupLayout() {
         showingFront: false,
         showingBack: true,
         flipProgress: 0,
-        flipping: false
+        flipping: false,
+        filePath: filePaths[idx],
+        isLoading: false  // initialize loading flag
       });
-      cards[i].filePath = filePaths[idx];
+    }
+  }
+
+  // Start loading images for all cards in the current layout
+  for (let c of cards) {
+    if (!imageCache[c.index] && !c.isLoading) {
+      c.isLoading = true;
+      loadImage(
+        c.filePath,
+        (img) => { 
+          imageCache[c.index] = img; 
+          c.isLoading = false;
+        },
+        (err) => { 
+          console.log("Error loading image:", c.filePath, err); 
+          c.isLoading = false;
+        }
+      );
     }
   }
 }
