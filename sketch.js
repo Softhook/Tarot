@@ -52,6 +52,8 @@ let cardImages = [];
 let imagesLoaded = 0;
 let totalImages = 0;
 let descriptions = [];
+let backImage;
+let flipSpeed = 0.05;
 
 let filePaths = [];       // Will hold all image paths for cards
 let currentIndex = 0;     // Tracks how many we have loaded so far
@@ -78,6 +80,7 @@ function preload() {
   OUimg = loadImage('logo.png', () => {}, () => {});
   OUfont = loadFont('poppins.ttf', () => {}, () => {});
   descriptions = loadStrings("descriptions.txt");
+  backImage = loadImage("back.jpg");
 }
 
 function setup() { 
@@ -136,6 +139,28 @@ function draw() {
   } else if (state === "about") {
     drawAboutScreen();
   } else if (state === "display") {
+    for (let i = 0; i < cards.length; i++) {
+      let c = cards[i];
+      if (c.flipping) {
+        c.flipProgress += flipSpeed;
+        
+        // At halfway, switch to front if not already shown
+        if (c.flipProgress >= 0.5 && !c.showingFront) {
+          c.showingFront = true;
+          c.showingBack = false;
+        }
+        
+        // When animation completes, reset flip properties
+        if (c.flipProgress >= 1) {
+          c.flipProgress = 0;
+          c.flipping = false;
+          c.isFlipped = true;      // Mark card as flipped (front face up)
+          c.showingFront = true;   // Ensure front is showing
+        }
+      }
+    }
+
+    // Then draw the layout
     if (enlargedCardIndex >= 0) {
       drawEnlargedCard(cards[enlargedCardIndex]);
     } else {
@@ -236,6 +261,24 @@ function drawLayout() {
   if (!chosenLayout) return;
   let count = chosenLayout.positionsCount;
   let layoutName = chosenLayout.name;
+
+
+  if (layoutName === "Single Card") {
+    // Determine size for enlarged view relative to screen size
+    let enlargedH = height * 0.9;
+    let enlargedW = enlargedH * cardAspectRatio;
+    let centreX = width / 2;
+    let centreY = height / 2;
+
+    // Set card position for centering
+    let singleCard = cards[0];
+    singleCard.x = centreX;
+    singleCard.y = centreY;
+
+    // Draw the card centred and enlarged
+    drawCard(singleCard, centreX, centreY, enlargedW, enlargedH, 0);
+    return;
+  }
 
   if (layoutName === "Full Deck") {
     let rows = isMobile ? 10 : 6;
@@ -394,6 +437,7 @@ function touchStarted() {
 }
 
 function mousePressed() {
+  // Enter fullscreen if available and not already in fullscreen
   if (!isIOS && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
     if (!fullscreen()) {
       fullscreen(true);
@@ -407,6 +451,7 @@ function mousePressed() {
       let yPos = (isMobile ? 180 : 200) + i * (isMobile ? 50 : 60);
       let halfW = isMobile ? 90 : 100;
       let halfH = isMobile ? 17.5 : 20;
+
       if (
         mouseX > width/2 - halfW && mouseX < width/2 + halfW &&
         mouseY > yPos - halfH && mouseY < yPos + halfH
@@ -414,9 +459,6 @@ function mousePressed() {
         chosenLayout = layouts[i];
         setupLayout();
         state = "display";
-        if (chosenLayout.name === "Single Card") {
-          enlargedCardIndex = 0;
-        }
       }
     }
 
@@ -437,7 +479,7 @@ function mousePressed() {
     }
 
   } else if (state === "about") {
-    // Back button
+    // Back button from About screen
     let backButtonY = isMobile ? 650 : 720;
     let backButtonW = 100;
     let backButtonH = 40;
@@ -454,32 +496,58 @@ function mousePressed() {
     }
 
   } else if (state === "display") {
-    // Back button in display
-    if (mouseX > width - 110 && mouseX < width - 10 &&
-        mouseY > height - 40 && mouseY < height - 10) {
+    // Back button in display state
+    if (
+      mouseX > width - 110 && mouseX < width - 10 &&
+      mouseY > height - 40 && mouseY < height - 10
+    ) {
       state = "intro";
       enlargedCardIndex = -1;
       cards = [];
       return;
     }
 
+
+
+    if (chosenLayout && chosenLayout.name === "Single Card") {
+      enlargedCardIndex = 0;
+    }
+
+    // If a card is currently enlarged, reset enlargement on next click
     if (enlargedCardIndex >= 0) {
-      if (chosenLayout.name === "Single Card") {
-        state = "intro";
-        enlargedCardIndex = -1;
-        cards = [];
+      if (chosenLayout && chosenLayout.name === "Single Card") {
+        let c = cards[0];  // Single card layout has only one card
+        let w = cardWidth;
+        let h = cardHeight;
+        // If the card is showing its back, initiate flip to reveal the front
+        if (!c.showingFront && !c.flipping) {
+          c.flipping = true;
+        }
+                // If the card is already flipped to front, return to intro on next click
+        // If the card is already showing its front, return to intro on next click
+        else if (c.showingFront && !c.flipping) {
+          state = "intro";
+          enlargedCardIndex = -1;
+          cards = [];
+        }
+
       } else {
+        // Remove enlargement on second click to go back to layout view
         enlargedCardIndex = -1;
       }
-    } else {
-      // Check card click
+      return;  // Skip further processing in this click
+    }
+
+
+    // Process clicks on cards for flipping or enlarging
+    if (chosenLayout && chosenLayout.name !== "Full Deck") {
       for (let i = 0; i < cards.length; i++) {
         let c = cards[i];
         let w = cardWidth;
         let h = cardHeight;
 
-        // Special bounding box if Celtic Cross index is 1 (rotated card)
-        if (chosenLayout && chosenLayout.name === "Celtic Cross" && i === 1) {
+        // Adjust bounding for Celtic Cross rotated card
+        if (chosenLayout.name === "Celtic Cross" && i === 1) {
           w = cardHeight;
           h = cardWidth;
         }
@@ -488,6 +556,35 @@ function mousePressed() {
           mouseX > c.x - w/2 && mouseX < c.x + w/2 &&
           mouseY > c.y - h/2 && mouseY < c.y + h/2
         ) {
+          // If the card is not yet flipped, flip it once
+          if (!c.showingFront && !c.flipping) {
+            c.flipping = true;
+          }
+          // If already flipped, enlarge it
+          else if (c.isFlipped && !c.flipping) {
+            enlargedCardIndex = i;
+          }
+          break; 
+        }
+      }
+    } else {
+      // Logic for "Full Deck" layout or other fallbacks
+      for (let i = 0; i < cards.length; i++) {
+        let c = cards[i];
+        let w = cardWidth;
+        let h = cardHeight;
+
+        // Handle Celtic Cross rotated card if needed
+        if (chosenLayout.name === "Celtic Cross" && i === 1) {
+          w = cardHeight;
+          h = cardWidth;
+        }
+
+        if (
+          mouseX > c.x - w/2 && mouseX < c.x + w/2 &&
+          mouseY > c.y - h/2 && mouseY < c.y + h/2
+        ) {
+          // For "Full Deck", simply enlarge the clicked card
           enlargedCardIndex = i;
           break;
         }
@@ -513,7 +610,13 @@ function setupLayout() {
         y: 0,
         name: cardData[i].name,
         index: i,
-        description: cardData[i].description
+        description: cardData[i].description,
+        // Flip props not used in Full Deck but we define them anyway
+        showingFront: true, // initially not showing front
+        showingBack: false,   // initially showing back
+        flipProgress: 0,
+        flipping: false,
+        isFlipped: true       // Mark as flipped so it's front face up
       });
     }
   } else {
@@ -531,7 +634,11 @@ function setupLayout() {
         y: 0,
         name: cardData[idx].name,
         index: idx,
-        description: cardData[idx].description
+        description: cardData[idx].description,
+        showingFront: false, // initially not showing front
+        showingBack: true,   // initially showing back
+        flipProgress: 0,
+        flipping: false
       });
     }
   }
@@ -567,28 +674,66 @@ function getFileNameForCard(cardName) {
   }
 }
 
+/* 
+  In drawCard, we do a 2D "scale" flip:
+  1. If flipProgress < 0.5, show one side, compressed.
+  2. If flipProgress >= 0.5, show other side, expanding.
+*/
 function drawCard(c, x, y, w, h, cardIndex) {
-  imageMode(CENTER);
-  if (cardImages[c.index]) {
-    image(cardImages[c.index], x, y, w, h);
+  push();
+  translate(x, y);
+  
+  // Determine scale factor, but bypass scaling if not flipping
+  let flipFactor = 1;
+  if (c.flipping) {
+    flipFactor = abs(0.5 - c.flipProgress) * 2;
+    flipFactor = constrain(flipFactor, 0.001, 1);
+  }
+  scale(flipFactor, 1);
+
+  // Decide which side to show
+  let showFront;
+  if (c.flipping && c.flipProgress < 0.5) {
+    showFront = false;  // During flip, first half shows back side
   } else {
-    fill(200);
-    rectMode(CENTER);
-    rect(x, y, w, h);
-    fill(0);
-    textAlign(CENTER, CENTER);
-    text(c.name, x, y);
+    showFront = c.showingFront;  // Show front based on new flag
+  }
+  
+  imageMode(CENTER);
+  if (showFront) {
+    if (cardImages[c.index]) {
+      image(cardImages[c.index], 0, 0, w, h);
+    } else {
+      fill(200);
+      rectMode(CENTER);
+      rect(0, 0, w, h);
+      fill(0);
+      textAlign(CENTER, CENTER);
+      text(c.name, 0, 0);
+    }
+  } else {
+    if (backImage) {
+      image(backImage, 0, 0, w, h);
+    } else {
+      fill(127);
+      rectMode(CENTER);
+      rect(0, 0, w, h);
+    }
   }
 
+  // Layout label text if relevant
   if (chosenLayout && layoutLabels[chosenLayout.name]) {
     let labels = layoutLabels[chosenLayout.name];
     if (typeof cardIndex !== 'undefined' && cardIndex < labels.length) {
       textAlign(LEFT, BOTTOM);
       fill(255);
       textSize(isMobile ? 10 : 14);
-      text(labels[cardIndex], x - w / 2 + 1, y - h / 2);
+      // Shift text slightly to remain visible
+      text(labels[cardIndex], -w / 2 + 1, -h / 2);
     }
   }
+
+  pop();
 }
 
 function keyPressed() {
