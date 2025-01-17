@@ -714,7 +714,7 @@ function drawCard(c, x, y, w, h, cardIndex) {
 
       //This is the tweak for the rotated Callange card
       if (chosenLayout.name === "Celtic Cross" && cardIndex === 1) {
-        labelX -= (isMobile ? 45 : 87);
+        labelX -= (isMobile ? 60 : 87);
         labelY += (isMobile ? 30 : 42);
       }
 
