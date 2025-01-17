@@ -46,6 +46,7 @@ let suits = ["Mind","Heart","Body","World"];
 let ranks = ["Ace","2","3","4","5","6","7","8","9","10","Page","Knight","Queen","King"];
 
 let descriptions = [];
+let showDescription = true;
 let backImage;
 let flipSpeed = 0.05;
 
@@ -343,6 +344,15 @@ function drawEnlargedCard(thisCard) {
   let enlargedH = height * 0.9;
   let enlargedW = enlargedH * cardAspectRatio;
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
+
+  // If descriptions are enabled, show them as small centred white text beneath the card
+  if (showDescription) {
+    fill(255);
+    textSize(isMobile ? 12 : 16);
+    textAlign(CENTER, TOP);
+    let descriptionWidth = textWidth(thisCard.description);
+    text(thisCard.description, width/2, 25);
+  } 
 }
 
 function calculateCardSize(rows, cols) {
