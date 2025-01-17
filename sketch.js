@@ -484,6 +484,7 @@ function mousePressed() {
         let w = cardWidth;
         let h = cardHeight;
 
+        //This is the tweak for the rotated Callange card
         if (chosenLayout.name === "Celtic Cross" && i === 1) {
           w = cardHeight;
           h = cardWidth;
@@ -666,9 +667,10 @@ function drawCard(c, x, y, w, h, cardIndex) {
       let labelX = x - w / 2 + 1;
       let labelY = y - h / 2;
 
+      //This is the tweak for the rotated Callange card
       if (chosenLayout.name === "Celtic Cross" && cardIndex === 1) {
-        labelX -= 87;
-        labelY += 42;
+        labelX -= (isMobile ? 50 : 87);
+        labelY += (isMobile ? 50 : 42);
       }
 
       text(labels[cardIndex], labelX, labelY);
