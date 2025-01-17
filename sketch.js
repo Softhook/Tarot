@@ -1,13 +1,27 @@
 /* --------------------------
-   GLOBAL VARIABLES
+   Design Wishes Tarot, 2025
+
+   Christian Nold
+   P5.js
 -------------------------- */
+
 let state = "intro"; 
-let simulateMode = false;
 let logo;
 let OUfont;
-
 let isIOS = isIOSDevice();
 let isMobile = isMobileDevice();
+let chosenLayout = null;
+let cards = [];
+let enlargedCardIndex = -1;
+let cardData = [];
+let cardAspectRatio = 100 / 171;   //Tarot card Ratio
+let cardWidth, cardHeight, margin;
+let descriptions = [];
+let showDescription = false;
+let backImage;
+let flipSpeed = 0.05;
+let filePaths = [];       // Holds all image paths for cards
+let imageCache = {};      // Cache for loaded images
 
 let layouts = [
   {name: "Single Card", positionsCount: 1},
@@ -29,14 +43,6 @@ let layoutLabels = {
   "5-Card Cross": ["Present", "Internal", "External", "Past", "Future"]
 };
 
-let chosenLayout = null;
-let cards = [];
-let enlargedCardIndex = -1;
-
-let cardData = [];
-let cardAspectRatio = 100 / 171;
-let cardWidth, cardHeight, margin;
-
 let majorArcanaNames = [
   "The Fool","The Magician","The High Priestess","The Empress","The Emperor","The Hierophant",
   "The Lovers","The Chariot","Strength","The Hermit","Wheel of Fortune","Justice","The Hanged Man",
@@ -45,13 +51,6 @@ let majorArcanaNames = [
 let suits = ["Mind","Heart","Body","World"];
 let ranks = ["Ace","2","3","4","5","6","7","8","9","10","Page","Knight","Queen","King"];
 
-let descriptions = [];
-let showDescription = false;
-let backImage;
-let flipSpeed = 0.05;
-
-let filePaths = [];       // Will hold all image paths for cards
-let imageCache = {};      // Cache for loaded images
 
 /* --------------------------
    HELPER FUNCTIONS
@@ -112,7 +111,7 @@ function setup() {
 function draw() {
   background(0);
 
-  // State logic (unchanged)
+  // State logic
   if (state === "intro") {
     drawIntroScreen();
   } else if (state === "about") {
@@ -153,11 +152,13 @@ function draw() {
    SCREEN DRAW FUNCTIONS
 -------------------------- */
 function drawIntroScreen() {
+  //The Logo
   imageMode(CENTER);
   image(logo, width / 2, 100);
+
+  //The Layout buttons
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 18);
-
   for (let i = 0; i < layouts.length; i++) {
     let yPos = (isMobile ? 220 : 220) + i * (isMobile ? 50 : 60);
     rectMode(CENTER);
@@ -167,6 +168,7 @@ function drawIntroScreen() {
     text(layouts[i].name, width / 2, yPos);
   }
 
+  //About Button
   let aboutButtonY = isMobile ? 650 : 720;
   let aboutButtonW = 100;
   let aboutButtonH = 40;
@@ -179,40 +181,36 @@ function drawIntroScreen() {
 }
 
 function drawAboutScreen() {
+  //About Text
   fill(255);
   textAlign(LEFT, TOP);
   textSize(isMobile ? 16 : 18);
   textLeading(25);
-
   let a = "The Design Wishes Tarot was created by Christian Nold, Georgy Holden, James Warren as part of an Open University scholarship project. The card designs are based on the textual wishes, hopes and dreams of Design students from the U101 module over the last decade. The students wrote their wishes onto postcards that they posted to us and we transcribed and analysed by hand and then transformed into graphics using generative Artificial Intelligence (AI) and lots of human labour. The design was created with Adobe Firefly, Photoshop, p5.js, Chat GPT o1 and the typefaces Roman Holiday Sketch and Poppins.";
-
   text(a, width / 2, isMobile ? 50 : 100, 400);
   
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 14);
 
-
+  //Toggle Tarot Description button 
   let toggleButtonY = (isMobile ? 650 : 720) - 60; 
   let buttonW = 130;
   let buttonH = 40;
   rectMode(CENTER);
-
   if (showDescription){
     fill(200, 150, 0);
   } else{
     fill(180);
   }
-
   rect(width / 2, toggleButtonY, buttonW, buttonH);
   fill(0);
   text("Tarot Meanings", width / 2, toggleButtonY);
 
-
+  //Back button 
   let backButtonW = 100;
   let backButtonH = 40;
   let backButtonX = width / 2;
   let backButtonY = isMobile ? 650 : 720;
-
   rectMode(CENTER);
   fill(180);
   rect(backButtonX, backButtonY, backButtonW, backButtonH);
@@ -363,7 +361,7 @@ function drawEnlargedCard(thisCard) {
   let enlargedW = enlargedH * cardAspectRatio;
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
 
-  // If descriptions are enabled, show them as small centred white text beneath the card
+  // If Tarot descriptions are enabled, show them as white text above the card
   if (showDescription) {
     fill(255);
     textSize(isMobile ? 12 : 16);
@@ -398,6 +396,7 @@ function touchStarted() {
 }
 
 function mousePressed() {
+  //Only Destop and Android are made fullscreen
   if (!isIOS && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
     if (!fullscreen()) {
       fullscreen(true);
@@ -712,7 +711,7 @@ function drawCard(c, x, y, w, h, cardIndex) {
       let labelX = x - w / 2 + 1;
       let labelY = y - h / 2;
 
-      //This is the tweak for the rotated Callange card
+      //This is the tweak for the rotated Challenge card
       if (chosenLayout.name === "Celtic Cross" && cardIndex === 1) {
         labelX -= (isMobile ? 60 : 87);
         labelY += (isMobile ? 30 : 42);
@@ -723,6 +722,7 @@ function drawCard(c, x, y, w, h, cardIndex) {
   }
 }
 
+//Arrow keys to cycle through cards in the layout
 function keyPressed() {
   if (enlargedCardIndex >= 0 && chosenLayout && chosenLayout.positionsCount > 1) {
     if (keyCode === RIGHT_ARROW && enlargedCardIndex < cards.length - 1) {
