@@ -46,7 +46,7 @@ let suits = ["Mind","Heart","Body","World"];
 let ranks = ["Ace","2","3","4","5","6","7","8","9","10","Page","Knight","Queen","King"];
 
 let descriptions = [];
-let showDescription = true;
+let showDescription = false;
 let backImage;
 let flipSpeed = 0.05;
 
@@ -190,6 +190,24 @@ function drawAboutScreen() {
   
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 14);
+
+
+  let toggleButtonY = (isMobile ? 650 : 720) - 60; 
+  let buttonW = 130;
+  let buttonH = 40;
+  rectMode(CENTER);
+
+  if (showDescription){
+    fill(200, 150, 0);
+  } else{
+    fill(180);
+  }
+
+  rect(width / 2, toggleButtonY, buttonW, buttonH);
+  fill(0);
+  text("Tarot Meanings", width / 2, toggleButtonY);
+
+
   let backButtonW = 100;
   let backButtonH = 40;
   let backButtonX = width / 2;
@@ -419,6 +437,23 @@ function mousePressed() {
     }
 
   } else if (state === "about") {
+
+  // Define toggle button boundaries
+  let buttonW = 130;
+  let buttonH = 40;
+  let toggleButtonY = (isMobile ? 650 : 720) - 60;
+  let toggleButtonX1 = (width / 2) - buttonW / 2;
+  let toggleButtonX2 = (width / 2) + buttonW / 2;
+  let toggleButtonY1 = toggleButtonY - buttonH / 2;
+  let toggleButtonY2 = toggleButtonY + buttonH / 2;
+
+  if (
+    mouseX > toggleButtonX1 && mouseX < toggleButtonX2 &&
+    mouseY > toggleButtonY1 && mouseY < toggleButtonY2
+  ) {
+    showDescription = !showDescription;
+  }
+
     let backButtonY = isMobile ? 650 : 720;
     let backButtonW = 100;
     let backButtonH = 40;
