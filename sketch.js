@@ -372,7 +372,7 @@ function drawLayout() {
 function drawEnlargedCard(thisCard) {
     let enlargedH;
   if (isMobile) {
-    enlargedH = height * 0.8;  // Use a smaller fraction for mobile
+    enlargedH = height * 0.9;  // Use a smaller fraction for mobile
   } else {
     enlargedH = height * 0.9;
   }
@@ -713,9 +713,17 @@ function drawCard(c, x, y, w, h, cardIndex) {
     }
   } else {
     if (backImage) {
-      image(backImage, 0, 0, w, h);
+      let adjustedW = w;
+      let adjustedH = h;
+      if (isMobile) {
+        // Apply a different scaling factor for the back on mobile
+        adjustedW *= 0.9;  // adjust as desired
+        adjustedH *= 0.9;
+      }
+      
+      image(backImage, 0, 0, adjustedW, adjustedH);
     } else {
-      fill(127);
+      fill(127); 
       rectMode(CENTER);
       rect(0, 0, w, h);
     }
