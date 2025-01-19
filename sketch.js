@@ -77,8 +77,7 @@ function preload() {
 }
 
 function setup() { 
-  //createCanvas(isMobile ? windowWidth : 1200, isMobile ? windowHeight : 800);
-  createCanvas(isMobile ? 360 : 1200, isMobile ? 640 : 800);
+  createCanvas(isMobile ? windowWidth : 1200, isMobile ? windowHeight : 800);
 
   textFont(OUfont);
   textSize(isMobile ? 16 : 12);
@@ -720,7 +719,7 @@ function drawCard(c, x, y, w, h, cardIndex) {
         adjustedW *= 0.9;  // adjust as desired
         adjustedH *= 0.9;
       }
-      
+
       image(backImage, 0, 0, adjustedW, adjustedH);
     } else {
       fill(127); 
