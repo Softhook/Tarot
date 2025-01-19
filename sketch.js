@@ -5,7 +5,7 @@
    P5.js
 -------------------------- */
 
-let state = "intro"; 
+let state = "cover"; 
 let logo;
 let OUfont;
 let isIOS = isIOSDevice();
@@ -111,6 +111,11 @@ function setup() {
 function draw() {
   background(0);
 
+  if (state === "cover") {
+    drawCoverScreen();
+    return;
+  }
+
   // State logic
   if (state === "intro") {
     drawIntroScreen();
@@ -151,6 +156,13 @@ function draw() {
 /* --------------------------
    SCREEN DRAW FUNCTIONS
 -------------------------- */
+function drawCoverScreen() {
+  background(0);
+  imageMode(CENTER);
+  image(logo, width / 2, height / 2);
+}
+
+
 function drawIntroScreen() {
   //The Logo
   imageMode(CENTER);
@@ -402,6 +414,11 @@ function mousePressed() {
       fullscreen(true);
       resizeCanvas(windowWidth, windowHeight);
     }
+  }
+
+  if (state === "cover") {
+    state = "intro";
+    return;
   }
 
   if (state === "intro") {
@@ -724,6 +741,12 @@ function drawCard(c, x, y, w, h, cardIndex) {
 
 //Arrow keys to cycle through cards in the layout
 function keyPressed() {
+
+  if (state === "cover") {
+    state = "intro";
+    return;
+  }
+  
   if (enlargedCardIndex >= 0 && chosenLayout && chosenLayout.positionsCount > 1) {
     if (keyCode === RIGHT_ARROW && enlargedCardIndex < cards.length - 1) {
       enlargedCardIndex++;
