@@ -77,8 +77,9 @@ function preload() {
 }
 
 function setup() { 
-  createCanvas(isMobile ? windowWidth : 1200, isMobile ? windowHeight : 800);
-  
+  //createCanvas(isMobile ? windowWidth : 1200, isMobile ? windowHeight : 800);
+  createCanvas(isMobile ? 360 : 1200, isMobile ? 640 : 800);
+
   textFont(OUfont);
   textSize(isMobile ? 16 : 12);
   margin = isMobile ? 12 : 25;
@@ -369,7 +370,12 @@ function drawLayout() {
 }
 
 function drawEnlargedCard(thisCard) {
-  let enlargedH = height * 0.9;
+    let enlargedH;
+  if (isMobile) {
+    enlargedH = height * 0.8;  // Use a smaller fraction for mobile
+  } else {
+    enlargedH = height * 0.9;
+  }
   let enlargedW = enlargedH * cardAspectRatio;
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
 
