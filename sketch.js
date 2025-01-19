@@ -712,15 +712,16 @@ function drawCard(c, x, y, w, h, cardIndex) {
     }
   } else {
     if (backImage) {
-      //let adjustedW = w;
-      //let adjustedH = h;
-      //if (isMobile) {
+      let adjustedW = w;
+      let adjustedH = h;
+      if (isMobile) {
+        if (layoutName === "Single Card") {
         // Apply a different scaling factor for the back on mobile
-      //  adjustedW *= 0.95;  // adjust as desired
-      //  adjustedH *= 0.95;
-      //}
-
-      image(backImage, 0, 0, w, h);
+          adjustedW *= 0.9;  // adjust as desired
+          adjustedH *= 0.9;
+        }
+      }
+      image(backImage, 0, 0, adjustedW, adjustedH);
     } else {
       fill(127); 
       rectMode(CENTER);
