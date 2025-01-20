@@ -159,7 +159,8 @@ function draw() {
 function drawCoverScreen() {
   background(0);
   imageMode(CENTER);
-  image(logo, width / 2, height / 2);
+  //image(logo, width / 2, height / 2);
+  image(logo, width / 2, height / 2, logo.width * 2, logo.height * 2);
 }
 
 
