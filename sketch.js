@@ -661,12 +661,12 @@ function getFileNameForCard(cardName) {
   let majorIndex = majorArcanaNames.indexOf(cardName);
   if (majorIndex >= 0) {
     let shortName = cardName.toLowerCase().replace(/ /g, "_");
-    return "major_" + majorIndex + "_" + shortName + ".jpg";
+    return "major_" + majorIndex + "_" + shortName + ".webp";
   } else {
     let parts = cardName.toLowerCase().split(" of ");
     let rank = parts[0];
     let suit = parts[1];
-    return suit + "_" + rank + ".jpg";
+    return suit + "_" + rank + ".webp";
   }
 }
 
