@@ -73,7 +73,7 @@ function preload() {
   logo = loadImage('logo.png', () => {}, () => {});
   OUfont = loadFont('poppins.ttf', () => {}, () => {});
   descriptions = loadStrings("descriptions.txt");
-  backImage = loadImage("back2.jpg");
+  backImage = loadImage("back.jpg");
 }
 
 function setup() { 
