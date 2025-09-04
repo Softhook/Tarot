@@ -11,6 +11,7 @@ let OUfont;
 let isIOS = isIOSDevice();
 let isMobile = isMobileDevice();
 let chosenLayout = null;
+let hasGoneFullscreen = false;
 let cards = [];
 let enlargedCardIndex = -1;
 let cardData = [];
@@ -19,7 +20,7 @@ let cardWidth, cardHeight, margin;
 let descriptions = [];
 let showDescription = false;
 let backImage;
-let flipSpeed = 0.05;
+let flipSpeed = 0.03;
 let filePaths = [];       // Holds all image paths for cards
 let imageCache = {};      // Cache for loaded images
 
@@ -418,11 +419,13 @@ function touchStarted() {
 }
 
 function mousePressed() {
-  //Only Destop and Android are made fullscreen
+  //Only Desktop and Android are made fullscreen
   if (!isIOS && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
-    if (!fullscreen()) {
+    if (!fullscreen() && !hasGoneFullscreen) {
       fullscreen(true);
       resizeCanvas(windowWidth, windowHeight);
+      hasGoneFullscreen = true;
+      return; // Exit early - don't process state changes on fullscreen click
     }
   }
 
