@@ -20,7 +20,7 @@ let cardWidth, cardHeight, margin;
 let descriptions = [];
 let showDescription = false;
 let backImage;
-let flipSpeed = 0.03;
+let flipSpeed = isMobile ? 0.05 : 0.03;
 let filePaths = [];       // Holds all image paths for cards
 let imageCache = {};      // Cache for loaded images
 
