@@ -11,7 +11,6 @@ let OUfont;
 let isIOS = isIOSDevice();
 let isMobile = isMobileDevice();
 let chosenLayout = null;
-let hasGoneFullscreen = false;
 let cards = [];
 let enlargedCardIndex = -1;
 let cardData = [];
@@ -419,13 +418,11 @@ function touchStarted() {
 }
 
 function mousePressed() {
-  //Only Desktop and Android are made fullscreen
+  //Only Destop and Android are made fullscreen
   if (!isIOS && (document.fullscreenEnabled || document.webkitFullscreenEnabled)) {
-    if (!fullscreen() && !hasGoneFullscreen) {
+    if (!fullscreen()) {
       fullscreen(true);
       resizeCanvas(windowWidth, windowHeight);
-      hasGoneFullscreen = true;
-      return; // Exit early - don't process state changes on fullscreen click
     }
   }
 
