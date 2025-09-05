@@ -154,6 +154,14 @@ function draw() {
   }
 }
 
+function setState(newState){
+  if(state===newState) return;
+  state = newState;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('tarot-state-change', { detail: state }));
+  }
+}
+
 /* --------------------------
    SCREEN DRAW FUNCTIONS
 -------------------------- */
@@ -431,7 +439,7 @@ function mousePressed() {
   }
 
   if (state === "cover") {
-    state = "intro";
+    setState("intro");
     return;
   }
 
@@ -447,9 +455,9 @@ function mousePressed() {
         mouseX > width/2 - halfW && mouseX < width/2 + halfW &&
         mouseY > yPos - halfH && mouseY < yPos + halfH
       ) {
-        chosenLayout = layouts[i];
-        setupLayout();
-        state = "display";
+  chosenLayout = layouts[i];
+  setupLayout();
+          setState("display");
       }
     }
   // Dynamic About button Y must mirror drawIntroScreen() logic
@@ -463,12 +471,9 @@ function mousePressed() {
     let aboutButtonY1 = aboutButtonY - aboutButtonH / 2;
     let aboutButtonY2 = aboutButtonY + aboutButtonH / 2;
 
-    if (
-      mouseX > aboutButtonX1 && mouseX < aboutButtonX2 &&
-      mouseY > aboutButtonY1 && mouseY < aboutButtonY2
-    ) {
-      state = "about";
-    }
+      if (mouseX > aboutButtonX1 && mouseX < aboutButtonX2 && mouseY > aboutButtonY1 && mouseY < aboutButtonY2) {
+        setState("about");
+      }
 
   } else if (state === "about") {
 
@@ -508,7 +513,7 @@ function mousePressed() {
       mouseX > width - 110 && mouseX < width - 10 &&
       mouseY > height - 40 && mouseY < height - 10
     ) {
-      state = "intro";
+        setState("intro");
       enlargedCardIndex = -1;
       cards = [];
       return;
@@ -524,7 +529,8 @@ function mousePressed() {
         if (!c.showingFront && !c.flipping) {
           c.flipping = true;
         } else if (c.showingFront && !c.flipping) {
-          state = "intro";
+         setState("intro");
+            setState("intro");
           enlargedCardIndex = -1;
           cards = [];
         }
