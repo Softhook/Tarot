@@ -185,9 +185,9 @@ function drawIntroScreen() {
   //The Layout buttons
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 18);
-  const baseY = isMobile ? 250 : 260; // push menu further down under logo
+  const baseY = isMobile ? 250 : 260; // base vertical offset under logo
   for (let i = 0; i < layouts.length; i++) {
-    let yPos = baseY + i * (isMobile ? 52 : 62);
+    let yPos = baseY + i * (isMobile ? 48 : 56); // reduced spacing
     rectMode(CENTER);
     fill(200, 150, 0);
   rect(width / 2, yPos, isMobile ? 180 : 200, isMobile ? 35 : 40, 4);
@@ -196,7 +196,7 @@ function drawIntroScreen() {
   }
 
   //About Button (dynamic below last menu item)
-  let lastMenuY = baseY + (layouts.length - 1) * (isMobile ? 52 : 62);
+  let lastMenuY = baseY + (layouts.length - 1) * (isMobile ? 48 : 56);
   let aboutSpacing = isMobile ? 70 : 80; // gap beneath last menu button
   let aboutButtonY = lastMenuY + aboutSpacing;
   let aboutButtonW = 100;
@@ -444,8 +444,8 @@ function mousePressed() {
   }
 
   if (state === "intro") {
-    const baseY = isMobile ? 250 : 260; // must match drawIntroScreen()
-    const step = isMobile ? 52 : 62;
+  const baseY = isMobile ? 250 : 260; // must match drawIntroScreen()
+  const step = isMobile ? 48 : 56; // reduced spacing
     for (let i = 0; i < layouts.length; i++) {
       let yPos = baseY + i * step;
       let halfW = isMobile ? 90 : 100;
