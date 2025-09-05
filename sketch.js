@@ -24,6 +24,7 @@ let filePaths = [];       // Holds all image paths for cards
 let imageCache = {};      // Cache for loaded images
 
 let layouts = [
+  {name: "Card of the Day", positionsCount: 1},
   {name: "Single Card", positionsCount: 1},
   {name: "Past, Present, Future", positionsCount: 3},
   {name: "Celtic Cross", positionsCount: 10},
@@ -186,8 +187,10 @@ function drawIntroScreen() {
   text(layouts[i].name, width / 2, yPos - 2);
   }
 
-  //About Button
-  let aboutButtonY = isMobile ? 680 : 760;
+  //About Button (dynamic below last menu item)
+  let lastMenuY = baseY + (layouts.length - 1) * (isMobile ? 52 : 62);
+  let aboutSpacing = isMobile ? 70 : 80; // gap beneath last menu button
+  let aboutButtonY = lastMenuY + aboutSpacing;
   let aboutButtonW = 100;
   let aboutButtonH = 40;
   fill(180);
@@ -241,7 +244,7 @@ function drawLayout() {
   let count = chosenLayout.positionsCount;
   let layoutName = chosenLayout.name;
 
-  if (layoutName === "Single Card") {
+  if (layoutName === "Single Card" || layoutName === "Card of the Day") {
     let enlargedH = height * 0.9;
     let enlargedW = enlargedH * cardAspectRatio;
     let centreX = width / 2;
@@ -449,7 +452,10 @@ function mousePressed() {
         state = "display";
       }
     }
-    let aboutButtonY = isMobile ? 680 : 760; // updated to match drawIntroScreen()
+  // Dynamic About button Y must mirror drawIntroScreen() logic
+  const lastMenuY = baseY + (layouts.length - 1) * step;
+  const aboutSpacing = isMobile ? 70 : 80;
+  let aboutButtonY = lastMenuY + aboutSpacing;
     let aboutButtonW = 100;
     let aboutButtonH = 40;
     let aboutButtonX1 = (width / 2) - aboutButtonW / 2;
@@ -508,12 +514,12 @@ function mousePressed() {
       return;
     }
 
-    if (chosenLayout && chosenLayout.name === "Single Card") {
+    if (chosenLayout && (chosenLayout.name === "Single Card" || chosenLayout.name === "Card of the Day")) {
       enlargedCardIndex = 0;
     }
 
     if (enlargedCardIndex >= 0) {
-      if (chosenLayout && chosenLayout.name === "Single Card") {
+      if (chosenLayout && (chosenLayout.name === "Single Card" || chosenLayout.name === "Card of the Day")) {
         let c = cards[0];
         if (!c.showingFront && !c.flipping) {
           c.flipping = true;
@@ -601,6 +607,23 @@ function setupLayout() {
       });
       cards[i].filePath = filePaths[i];
     }
+  } else if (chosenLayout.name === "Card of the Day") {
+    const dailyIndex = getDailyCardIndex();
+    const cData = cardData[dailyIndex];
+    cards.push({
+      x: 0,
+      y: 0,
+      name: cData.name,
+      index: dailyIndex,
+      description: cData.description,
+      showingFront: false,
+      showingBack: true,
+      flipProgress: 0,
+      flipping: false,
+      filePath: filePaths[dailyIndex],
+      isLoading: false,
+      isFlipped: false
+    });
   } else {
     let validIndices = cardData.map((_, index) => index);
     validIndices = shuffleArray(validIndices);
@@ -640,6 +663,22 @@ function setupLayout() {
       );
     }
   }
+}
+
+// Deterministic daily card: hash YYYY-MM-DD into index 0..(cardData.length-1)
+function getDailyCardIndex() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1; // 1-based
+  const d = now.getDate();
+  const key = `${y}-${m}-${d}`;
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = ((hash << 5) - hash) + key.charCodeAt(i);
+    hash |= 0; // 32-bit
+  }
+  hash = Math.abs(hash);
+  return hash % cardData.length;
 }
 
 function shuffleArray(array) {
