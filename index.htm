@@ -1,15 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark light" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tarot" />
     <script src="p5.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="utf-8" />
-
-
+    <title>Tarot</title>
   </head>
   <body>
     <main>
     </main>
     <script src="sketch.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').catch(console.error);
+        });
+      }
+    </script>
+  <button id="installBtn" style="position:fixed;right:1rem;top:1rem;padding:.6rem 1rem;font-family:inherit;font-size:.9rem;background:#222;color:#fff;border:1px solid #555;border-radius:4px;cursor:pointer;display:none;z-index:999;">Install App</button>
+    <script>
+      let deferredPrompt;
+      const btn = document.getElementById('installBtn');
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        btn.style.display = 'inline-block';
+      });
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome !== 'accepted') {
+          btn.disabled = false;
+        } else {
+          btn.textContent = 'Installed';
+          setTimeout(()=> btn.style.display='none', 1500);
+        }
+        deferredPrompt = null;
+      });
+      window.addEventListener('appinstalled', () => {
+        btn.textContent = 'Installed';
+        setTimeout(()=> btn.style.display='none', 1200);
+      });
+    </script>
   </body>
 </html>

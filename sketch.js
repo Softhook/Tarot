@@ -176,25 +176,26 @@ function drawIntroScreen() {
   //The Layout buttons
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 18);
+  const baseY = isMobile ? 250 : 260; // push menu further down under logo
   for (let i = 0; i < layouts.length; i++) {
-    let yPos = (isMobile ? 220 : 220) + i * (isMobile ? 50 : 60);
+    let yPos = baseY + i * (isMobile ? 52 : 62);
     rectMode(CENTER);
     fill(200, 150, 0);
-    rect(width / 2, yPos, isMobile ? 180 : 200, isMobile ? 35 : 40);
+  rect(width / 2, yPos, isMobile ? 180 : 200, isMobile ? 35 : 40, 4);
     fill(0);
-    text(layouts[i].name, width / 2, yPos);
+  text(layouts[i].name, width / 2, yPos - 2);
   }
 
   //About Button
-  let aboutButtonY = isMobile ? 650 : 720;
+  let aboutButtonY = isMobile ? 680 : 760;
   let aboutButtonW = 100;
   let aboutButtonH = 40;
   fill(180);
   rectMode(CENTER);
-  rect(width / 2, aboutButtonY, aboutButtonW, aboutButtonH);
+  rect(width / 2, aboutButtonY, aboutButtonW, aboutButtonH, 4);
   fill(0);
   textSize(isMobile ? 16 : 14);
-  text("About", width / 2, aboutButtonY);
+  text("About", width / 2, aboutButtonY - 2);
 }
 
 function drawAboutScreen() {
@@ -219,9 +220,9 @@ function drawAboutScreen() {
   } else{
     fill(180);
   }
-  rect(width / 2, toggleButtonY, buttonW, buttonH);
+  rect(width / 2, toggleButtonY, buttonW, buttonH, 4);
   fill(0);
-  text("Tarot Meanings", width / 2, toggleButtonY);
+  text("Tarot Meanings", width / 2, toggleButtonY - 2);
 
   //Back button 
   let backButtonW = 100;
@@ -230,9 +231,9 @@ function drawAboutScreen() {
   let backButtonY = isMobile ? 650 : 720;
   rectMode(CENTER);
   fill(180);
-  rect(backButtonX, backButtonY, backButtonW, backButtonH);
+  rect(backButtonX, backButtonY, backButtonW, backButtonH, 4);
   fill(0);
-  text("Back", backButtonX, backButtonY);
+  text("Back", backButtonX, backButtonY - 2);
 }
 
 function drawLayout() {
@@ -432,8 +433,10 @@ function mousePressed() {
   }
 
   if (state === "intro") {
+    const baseY = isMobile ? 250 : 260; // must match drawIntroScreen()
+    const step = isMobile ? 52 : 62;
     for (let i = 0; i < layouts.length; i++) {
-      let yPos = (isMobile ? 220 : 220) + i * (isMobile ? 50 : 60);
+      let yPos = baseY + i * step;
       let halfW = isMobile ? 90 : 100;
       let halfH = isMobile ? 17.5 : 20;
 
@@ -446,8 +449,7 @@ function mousePressed() {
         state = "display";
       }
     }
-
-    let aboutButtonY = isMobile ? 650 : 720;
+    let aboutButtonY = isMobile ? 680 : 760; // updated to match drawIntroScreen()
     let aboutButtonW = 100;
     let aboutButtonH = 40;
     let aboutButtonX1 = (width / 2) - aboutButtonW / 2;
@@ -651,10 +653,10 @@ function shuffleArray(array) {
 function drawBackButton() {
   rectMode(CORNER);
   fill(180);
-  rect(width - 110, height - 40, 100, 30);
+  rect(width - 110, height - 40, 100, 30, 4);
   fill(0);
   textAlign(CENTER, CENTER);
-  text("Back", width - 60, height - 25);
+  text("Back", width - 60, height - 27);
 }
 
 function getFileNameForCard(cardName) {
