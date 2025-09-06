@@ -253,8 +253,18 @@ function drawLayout() {
   let layoutName = chosenLayout.name;
 
   if (layoutName === "Single Card" || layoutName === "Card of the Day") {
-    let enlargedH = height * 0.9;
-    let enlargedW = enlargedH * cardAspectRatio;
+    // Fit card to whichever dimension (width or height) is limiting so the whole card is visible
+    let maxW = width;
+    let maxH = height;
+    let hFromWidth = maxW / cardAspectRatio;
+    let enlargedW, enlargedH;
+    if (hFromWidth <= maxH) {
+      enlargedW = maxW;
+      enlargedH = hFromWidth;
+    } else {
+      enlargedH = maxH;
+      enlargedW = enlargedH * cardAspectRatio;
+    }
     let centreX = width / 2;
     let centreY = height / 2;
 
@@ -386,13 +396,24 @@ function drawLayout() {
 }
 
 function drawEnlargedCard(thisCard) {
-  let enlargedH;
-  if (isMobile) {
-    enlargedH = height * 0.9;  // Use a smaller fraction for mobile
+  let enlargedW, enlargedH;
+  // For single-card style layouts, fill screen while keeping aspect ratio (no margin)
+  if (chosenLayout && (chosenLayout.name === "Single Card" || chosenLayout.name === "Card of the Day")) {
+    let maxW = width;
+    let maxH = height;
+    let hFromWidth = maxW / cardAspectRatio;
+    if (hFromWidth <= maxH) {
+      enlargedW = maxW;
+      enlargedH = hFromWidth;
+    } else {
+      enlargedH = maxH;
+      enlargedW = enlargedH * cardAspectRatio;
+    }
   } else {
+    // Existing behavior for enlarged cards in multi-card layouts
     enlargedH = height * 0.9;
+    enlargedW = enlargedH * cardAspectRatio;
   }
-  let enlargedW = enlargedH * cardAspectRatio;
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
 
   // If Tarot descriptions are enabled, show them as white text above the card
