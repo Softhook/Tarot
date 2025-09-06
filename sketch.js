@@ -77,6 +77,19 @@ function preload() {
   backImage = loadImage("back.jpg");
 }
 
+// Compute dimensions to fully fit a card within the current viewport (no margins)
+function getFullFitCardDimensions() {
+  const maxW = width;
+  const maxH = height;
+  const hFromWidth = maxW / cardAspectRatio;
+  if (hFromWidth <= maxH) {
+    return { w: maxW, h: hFromWidth };
+  } else {
+    const h = maxH;
+    return { w: h * cardAspectRatio, h };
+  }
+}
+
 function setup() { 
   createCanvas(isMobile ? windowWidth : 1200, isMobile ? windowHeight : 800);
 
@@ -253,18 +266,7 @@ function drawLayout() {
   let layoutName = chosenLayout.name;
 
   if (layoutName === "Single Card" || layoutName === "Card of the Day") {
-    // Fit card to whichever dimension (width or height) is limiting so the whole card is visible
-    let maxW = width;
-    let maxH = height;
-    let hFromWidth = maxW / cardAspectRatio;
-    let enlargedW, enlargedH;
-    if (hFromWidth <= maxH) {
-      enlargedW = maxW;
-      enlargedH = hFromWidth;
-    } else {
-      enlargedH = maxH;
-      enlargedW = enlargedH * cardAspectRatio;
-    }
+    const { w: enlargedW, h: enlargedH } = getFullFitCardDimensions();
     let centreX = width / 2;
     let centreY = height / 2;
 
@@ -396,24 +398,7 @@ function drawLayout() {
 }
 
 function drawEnlargedCard(thisCard) {
-  let enlargedW, enlargedH;
-  // For single-card style layouts, fill screen while keeping aspect ratio (no margin)
-  if (chosenLayout && (chosenLayout.name === "Single Card" || chosenLayout.name === "Card of the Day")) {
-    let maxW = width;
-    let maxH = height;
-    let hFromWidth = maxW / cardAspectRatio;
-    if (hFromWidth <= maxH) {
-      enlargedW = maxW;
-      enlargedH = hFromWidth;
-    } else {
-      enlargedH = maxH;
-      enlargedW = enlargedH * cardAspectRatio;
-    }
-  } else {
-    // Existing behavior for enlarged cards in multi-card layouts
-    enlargedH = height * 0.9;
-    enlargedW = enlargedH * cardAspectRatio;
-  }
+  const { w: enlargedW, h: enlargedH } = getFullFitCardDimensions();
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
 
   // If Tarot descriptions are enabled, show them as white text above the card
@@ -539,25 +524,21 @@ function mousePressed() {
       cards = [];
       return;
     }
-
+    // Single-card layouts: flip in-place (no separate enlarged state) for identical sizing
     if (chosenLayout && (chosenLayout.name === "Single Card" || chosenLayout.name === "Card of the Day")) {
-      enlargedCardIndex = 0;
+      let c = cards[0];
+      if (!c.showingFront && !c.flipping) {
+        c.flipping = true;
+      } else if (c.showingFront && !c.flipping) {
+        setState("intro");
+        enlargedCardIndex = -1;
+        cards = [];
+      }
+      return;
     }
 
     if (enlargedCardIndex >= 0) {
-      if (chosenLayout && (chosenLayout.name === "Single Card" || chosenLayout.name === "Card of the Day")) {
-        let c = cards[0];
-        if (!c.showingFront && !c.flipping) {
-          c.flipping = true;
-        } else if (c.showingFront && !c.flipping) {
-         setState("intro");
-            setState("intro");
-          enlargedCardIndex = -1;
-          cards = [];
-        }
-      } else {
-        enlargedCardIndex = -1;
-      }
+      enlargedCardIndex = -1; // tap to exit enlarged view for multi-card layouts
       return;
     }
 
