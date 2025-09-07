@@ -30,13 +30,36 @@
     <script>
       let deferredPrompt;
       const btn = document.getElementById('installBtn');
+      
+      // Detect iOS (including Silicon iPads that report as macOS)
+      function detectIOS() {
+        // Traditional iOS devices
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) return true;
+        // Silicon iPads (report as macOS but have touch support)
+        if (navigator.userAgent.includes('Macintosh') && 'ontouchend' in document) return true;
+        return false;
+      }
+      const isIOS = detectIOS();
+      
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         // Only show if intro screen is active (will be toggled via custom event)
         if (window.__tarotState === 'intro') btn.style.display = 'inline-block';
       });
+      
       async function triggerInstall() {
+        if (isIOS) {
+          // Check if iOS instructions were already shown
+          if (localStorage.getItem('ios-install-shown') === 'true') {
+            return; // Don't show again
+          }
+          // iOS: Show instructions instead of triggering install
+          showIOSInstallInstructions();
+          localStorage.setItem('ios-install-shown', 'true');
+          return;
+        }
+        
         btn.disabled = true;
         if (!deferredPrompt) return;
         deferredPrompt.prompt();
@@ -49,17 +72,77 @@
         }
         deferredPrompt = null;
       }
+      
+      function showIOSInstallInstructions() {
+        // Create overlay with iOS installation instructions
+        const overlay = document.createElement('div');
+        overlay.style.cssText = `
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.9); color: white; z-index: 1000;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          font-family: inherit; text-align: center; padding: 2rem;
+          opacity: 0; transition: opacity 0.3s ease-in-out;
+        `;
+        
+        overlay.innerHTML = `
+          <h2 style="margin-bottom: 1rem; color: #fff;">Install on iOS</h2>
+          <p style="margin-bottom: 1.5rem; line-height: 1.4;">
+            1. Tap the Share button<br>
+            2. Scroll down and tap "Add to Home Screen"<br>
+            3. Tap "Add" to confirm
+          </p>
+          <button onclick="this.parentElement.remove()" style="
+            padding: 0.8rem 1.5rem; background: #007aff; color: white; 
+            border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
+          ">Got it</button>
+        `;
+        
+        document.body.appendChild(overlay);
+        
+        // Fade in
+        requestAnimationFrame(() => {
+          overlay.style.opacity = '1';
+        });
+        
+        // Auto-dismiss after 4 seconds with fade out
+        setTimeout(() => {
+          overlay.style.opacity = '0';
+          setTimeout(() => {
+            if (overlay.parentElement) {
+              overlay.remove();
+            }
+          }, 300); // Match transition duration
+        }, 4000);
+      }
+      
       btn.addEventListener('click', triggerInstall, { passive: true });
       btn.addEventListener('touchend', (e) => { e.preventDefault(); triggerInstall(); }, { passive: false });
+      
       window.addEventListener('appinstalled', () => {
         btn.textContent = 'Installed';
         setTimeout(()=> btn.style.display='none', 1200);
       });
 
+      // Check if PWA is already installed (iOS detection)
+      function isPWAInstalled() {
+        // iOS: Check if running in standalone mode
+        if (window.navigator.standalone === true) return true;
+        // Other browsers: Check display mode
+        if (window.matchMedia('(display-mode: standalone)').matches) return true;
+        return false;
+      }
+
       // Listen for custom state change events from p5 sketch
       window.addEventListener('tarot-state-change', (e) => {
         window.__tarotState = e.detail;
-        if (e.detail === 'intro' && deferredPrompt) {
+        
+        // Don't show button if PWA is already installed
+        if (isPWAInstalled()) {
+          btn.style.display = 'none';
+          return;
+        }
+        
+        if (e.detail === 'intro' && (deferredPrompt || isIOS)) {
           btn.style.display = 'inline-block';
         } else if (e.detail !== 'intro') {
           btn.style.display = 'none';
