@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `tarot-cache-${CACHE_VERSION}`;
 
 // Resolve an asset path relative to the service worker scope so it works in subfolders
@@ -63,13 +63,22 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function handleNavigation(req) {
+  // For local file access or when offline, serve cached content first
+  const cachedIndex = await caches.match(resolve('index.htm'));
+  
+  // If we have cached content and we're accessing via file:// protocol, use cache
+  if (cachedIndex && (req.url.startsWith('file://') || !navigator.onLine)) {
+    return cachedIndex;
+  }
+  
+  // Try network first for http/https requests when online
   try {
     const netRes = await fetch(req);
     const cache = await caches.open(CACHE_NAME);
     cache.put(req, netRes.clone());
     return netRes;
   } catch (e) {
-    const cachedIndex = await caches.match(resolve('index.htm'));
+    // Fallback to cache if network fails
     if (cachedIndex) return cachedIndex;
     return new Response('<h1>Offline</h1><p>No cached content available.</p>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
