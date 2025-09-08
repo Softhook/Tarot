@@ -401,14 +401,13 @@ function drawEnlargedCard(thisCard) {
   const { w: enlargedW, h: enlargedH } = getFullFitCardDimensions();
   drawCard(thisCard, width / 2, height / 2, enlargedW, enlargedH);
 
-  // If Tarot descriptions are enabled, show them as white text above the card
+  // If Tarot descriptions are enabled, show them as white text at the top
   if (showDescription) {
     fill(255);
     textSize(isMobile ? 12 : 16);
     textAlign(CENTER, TOP);
-    let descriptionWidth = textWidth(thisCard.description);
-    text(thisCard.description, width/2, 25);
-  } 
+    text(thisCard.description, width/2, -2);
+  }
 }
 
 function calculateCardSize(rows, cols) {
