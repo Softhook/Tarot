@@ -235,7 +235,7 @@ function drawAboutScreen() {
   textSize(isMobile ? 16 : 14);
 
   //Toggle Tarot Description button 
-  let toggleButtonY = (isMobile ? 820 : 890) - 60; 
+  let toggleButtonY = (isMobile ? 770 : 890) - 60; 
   let buttonW = 130;
   let buttonH = 40;
   rectMode(CENTER);
@@ -252,7 +252,7 @@ function drawAboutScreen() {
   let backButtonW = 100;
   let backButtonH = 40;
   let backButtonX = width / 2;
-  let backButtonY = isMobile ? 820 : 890;
+  let backButtonY = isMobile ? 770 : 890;
   rectMode(CENTER);
   fill(180);
   rect(backButtonX, backButtonY, backButtonW, backButtonH, 4);
