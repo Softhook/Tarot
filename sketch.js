@@ -228,14 +228,14 @@ function drawAboutScreen() {
   textAlign(LEFT, TOP);
   textSize(isMobile ? 16 : 18);
   textLeading(25);
-  let a = "The Design Wishes Tarot was created in 2025 by Christian Nold, Georgy Holden, and James Warren as part of an Open University scholarship project. The card designs are based on the wishes, hopes, and dreams of Design students from the U101 module over the last decade. The students wrote these wishes on postcards, which they posted to the university. The messages were then transcribed and analysed by hand, before being transformed into images using generative Artificial Intelligence and human craft & judgement. The designs were produced using Adobe Firefly Image 3, Photoshop, p5.js, ChatGPT 01, and the typefaces Roman Holiday Sketch and Poppins and scans of the Rider-Waite Tarot.";
-  text(a, width / 2, isMobile ? 50 : 100, 400);
+  let a = "This Design Wishes Tarot is composed of many people’s wishes and turns personal desires into a shared instrument. When you draw a card, you are invited to inhabit someone else’s longing and reflect on how it resonates with your own. \n\n The Deck was created in 2025 by Christian Nold, Georgy Holden, and James Warren as part of an Open University scholarship project. Over the last decade design students from the U101 module have been writing their wishes on postcards, which they posted back to the university. These messages were then transcribed and analysed, before being transformed into images using generative Artificial Intelligence and lots of human craft & judgement. The deck weaves together multiple layers: Tarot symbolism, the discipline of design, the visual language of generative AI, playful visual jokes, and the context of remote study at the Open University. The designs were produced using Adobe Firefly Image 3, Photoshop, p5.js, ChatGPT 01, and the typefaces Roman Holiday Sketch and Poppins and scans of the Rider-Waite Tarot.";
+  text(a, width / 2, isMobile ? 50 : 80, 400);
   
   textAlign(CENTER, CENTER);
   textSize(isMobile ? 16 : 14);
 
   //Toggle Tarot Description button 
-  let toggleButtonY = (isMobile ? 650 : 720) - 60; 
+  let toggleButtonY = (isMobile ? 820 : 890) - 60; 
   let buttonW = 130;
   let buttonH = 40;
   rectMode(CENTER);
@@ -252,7 +252,7 @@ function drawAboutScreen() {
   let backButtonW = 100;
   let backButtonH = 40;
   let backButtonX = width / 2;
-  let backButtonY = isMobile ? 650 : 720;
+  let backButtonY = isMobile ? 820 : 890;
   rectMode(CENTER);
   fill(180);
   rect(backButtonX, backButtonY, backButtonW, backButtonH, 4);
