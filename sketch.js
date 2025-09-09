@@ -275,6 +275,15 @@ function drawLayout() {
     singleCard.y = centreY;
 
     drawCard(singleCard, centreX, centreY, enlargedW, enlargedH, 0);
+    
+    // If Tarot descriptions are enabled and card is flipped to front, show description at the top
+    if (showDescription && singleCard.showingFront) {
+      fill(255);
+      textSize(isMobile ? 12 : 16);
+      textAlign(CENTER, TOP);
+      text(singleCard.description, width/2, -2);
+    }
+    
     return;
   }
 
