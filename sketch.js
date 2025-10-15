@@ -37,7 +37,7 @@ let layouts = [
 
 let layoutLabels = {
   "Past, Present, Future": ["Past", "Present", "Future"],
-  "Celtic Cross": ["Present", "Challenge", "Immediate Future", "Past", "Foundation", "Future", "Outcome", "Hopes & Fears", "External", "Self", "Outcome"],
+  "Celtic Cross": ["Present", "Challenge", "Below", "Past", "Above", "Future", "Outcome", "Hopes & Fears", "External Influences", "Advice", "Outcome"],
   "STAR": ["Situation", "Action", "Task", "Result"],
   "Year": ["Summary", "January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"],
   "SMART": ["Specific", "Measurable", "Achievable", "Relevant", "Time-bound"],
